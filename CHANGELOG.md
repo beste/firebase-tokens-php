@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## 5.6.0 - 2026-09-12
+
 * Added support for `beste/clock` 4.0
 
 ## 5.5.0 - 2026-07-23
