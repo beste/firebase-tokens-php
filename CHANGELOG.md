@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+* Added support for `beste/clock` 4.0
+
 ## 5.5.0 - 2026-07-23
 
 * Added support for Guzzle 8
