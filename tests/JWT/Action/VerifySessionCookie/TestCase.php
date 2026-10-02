@@ -50,6 +50,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public function testItFailsWithEmptyKeys(): void
     {
+        $this->skipIfEmulated();
+
         $this->keys = StaticKeys::empty();
 
         $this->expectException(SessionCookieVerificationFailed::class);
