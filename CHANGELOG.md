@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## 5.6.1 - 2026-10-02
+
 * Fixed unnecessary public key fetching when verifying ID tokens and session cookies with the Auth emulator
 
 ## 5.6.0 - 2026-09-12
