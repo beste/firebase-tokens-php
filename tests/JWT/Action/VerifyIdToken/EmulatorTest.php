@@ -7,6 +7,7 @@ namespace Kreait\Firebase\JWT\Tests\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Action\VerifyIdToken;
 use Kreait\Firebase\JWT\Action\VerifyIdToken\Handler;
 use Kreait\Firebase\JWT\Action\VerifyIdToken\WithLcobucciJWT;
+use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\InsecureToken;
 
 /**
@@ -26,6 +27,17 @@ final class EmulatorTest extends TestCase
     public function testItAcceptsAnUnsignedToken(): void
     {
         $token = $this->createHandler()->handle(VerifyIdToken::withToken($this->token->withoutSignature()->idToken()));
+
+        $this->assertInstanceOf(InsecureToken::class, $token);
+    }
+
+    public function testItDoesNotFetchPublicKeys(): void
+    {
+        $keys = $this->createMock(Keys::class);
+        $keys->expects($this->never())->method('all');
+        $handler = new WithLcobucciJWT($this->projectId, $keys, $this->clock);
+
+        $token = $handler->handle(VerifyIdToken::withToken($this->token->withoutSignature()->idToken()));
 
         $this->assertInstanceOf(InsecureToken::class, $token);
     }

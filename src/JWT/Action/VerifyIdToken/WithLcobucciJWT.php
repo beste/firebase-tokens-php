@@ -136,13 +136,13 @@ final readonly class WithLcobucciJWT implements Handler
 
     private function getKey(UnencryptedToken $token): string
     {
+        if ($this->isRunOnEmulator && ($this->signer instanceof None)) {
+            return '';
+        }
+
         $keys = $this->keys->all();
         if ($keys === []) {
             throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ['No keys are available to verify the tokens signature.']);
-        }
-
-        if ($this->isRunOnEmulator && ($this->signer instanceof None)) {
-            return '';
         }
 
         $keyId = $token->headers()->get('kid');

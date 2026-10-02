@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+* Fixed unnecessary public key fetching when verifying ID tokens and session cookies with the Auth emulator
+
 ## 5.6.0 - 2026-09-12
 
 * Added support for `beste/clock` 4.0

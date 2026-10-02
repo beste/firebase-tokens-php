@@ -7,6 +7,7 @@ namespace Kreait\Firebase\JWT\Tests\Action\VerifySessionCookie;
 use Kreait\Firebase\JWT\Action\VerifySessionCookie;
 use Kreait\Firebase\JWT\Action\VerifySessionCookie\Handler;
 use Kreait\Firebase\JWT\Action\VerifySessionCookie\WithLcobucciJWT;
+use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\InsecureToken;
 
 /**
@@ -28,6 +29,17 @@ final class EmulatorTest extends TestCase
         $token = $this->createHandler()->handle(
             VerifySessionCookie::withSessionCookie($this->token->withoutSignature()->sessionCookie()),
         );
+
+        $this->assertInstanceOf(InsecureToken::class, $token);
+    }
+
+    public function testItDoesNotFetchPublicKeys(): void
+    {
+        $keys = $this->createMock(Keys::class);
+        $keys->expects($this->never())->method('all');
+        $handler = new WithLcobucciJWT($this->projectId, $keys, $this->clock);
+
+        $token = $handler->handle(VerifySessionCookie::withSessionCookie($this->token->withoutSignature()->sessionCookie()));
 
         $this->assertInstanceOf(InsecureToken::class, $token);
     }
