@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+* Fixed whitespace-only `FIREBASE_AUTH_EMULATOR_HOST` values incorrectly enabling emulator mode and skipping signature
+  verification for ID tokens and session cookies
+
 ## 5.6.1 - 2026-10-02
 
 * Fixed unnecessary public key fetching when verifying ID tokens and session cookies with the Auth emulator
@@ -29,8 +32,7 @@
 
 ## 5.2.0 - 2024-08-17
 
-* Added support for PHP 8.4
-  ([#61](https://github.com/beste/firebase-tokens-php/pull/61))
+* Added support for PHP 8.4 ([#61](https://github.com/beste/firebase-tokens-php/pull/61))
 
 ## 5.1.0 - 2024-05-10
 

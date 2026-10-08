@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kreait\Firebase\JWT;
 
 use function in_array;
+use function trim;
 
 /**
  * @internal
@@ -18,11 +19,13 @@ final class Util
     {
         $value = $_SERVER[$name] ?? $_ENV[$name] ?? getenv($name);
 
-        if (is_string($value)) {
-            return $value;
+        if (!is_string($value)) {
+            return null;
         }
 
-        return null;
+        $value = trim($value);
+
+        return $value !== '' ? $value : null;
     }
 
     public static function authEmulatorHost(): string
