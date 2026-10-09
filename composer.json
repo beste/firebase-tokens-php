@@ -76,12 +76,12 @@
             "@test-units",
             "@test-emulator"
         ],
-        "test-emulator": [
-            "FIREBASE_AUTH_EMULATOR_HOST=localhost:9099",
-            "firebase emulators:exec --only auth --project demo-project 'vendor/bin/phpunit --group=emulator --testdox'"
-        ],
+        "test-bc": "XDEBUG_MODE=off tools/.bc/vendor/bin/roave-backward-compatibility-check",
+        "test-emulator": "FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 vendor/bin/phpunit --group=emulator --testdox",
         "test-units": [
             "vendor/bin/phpunit --exclude-group=emulator --testdox"
-        ]
+        ],
+        "tools:bc:install": "XDEBUG_MODE=off composer --working-dir=tools/.bc install --no-interaction --no-progress --ansi",
+        "tools:bc:update": "XDEBUG_MODE=off composer --working-dir=tools/.bc update --no-interaction --no-progress --ansi"
     }
 }

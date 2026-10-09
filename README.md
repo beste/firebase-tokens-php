@@ -240,6 +240,18 @@ $cache = new FilesystemAdapter();
 $verifier = IdTokenVerifier::createWithProjectIdAndCache($projectId, $cache);
 ```
 
+## Development
+
+Install and run backward compatibility checks with PHP 8.5:
+
+```shell
+composer tools:bc:install
+composer test-bc
+```
+
+The BC checker is installed separately because its locked dependencies do not support PHP 8.6.
+CI installs the same lockfile. Update it with `composer tools:bc:update` under PHP 8.5.
+
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE) for more information.
