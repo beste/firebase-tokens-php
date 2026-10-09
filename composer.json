@@ -32,12 +32,6 @@
     },
     "require-dev": {
         "beste/in-memory-cache": "^1.6",
-        "friendsofphp/php-cs-fixer": "^3.95.27",
-        "phpstan/extension-installer": "^1.4.3",
-        "phpstan/phpstan": "^2.3.1",
-        "phpstan/phpstan-phpunit": "^2.1.1",
-        "phpunit/phpunit": "^10.5.66",
-        "rector/rector": "^2.7.0",
         "symfony/var-dumper": "^6.4.3 || ^7.3.4 || ^8.1.7"
     },
     "autoload": {
@@ -51,24 +45,21 @@
         }
     },
     "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "phpstan/extension-installer": true
-        }
+        "sort-packages": true
     },
     "scripts": {
         "analyse": [
-            "XDEBUG_MODE=off vendor/bin/phpstan"
+            "XDEBUG_MODE=off tools/phpstan"
         ],
         "analyze": "@analyse",
         "cs": [
-            "vendor/bin/php-cs-fixer fix --diff --verbose"
+            "tools/php-cs-fixer fix --diff --verbose"
         ],
         "rector": [
-            "vendor/bin/rector --dry-run"
+            "tools/rector --dry-run"
         ],
         "rector-fix": [
-            "vendor/bin/rector",
+            "tools/rector",
             "@cs"
         ],
         "test": [
@@ -77,11 +68,44 @@
             "@test-emulator"
         ],
         "test-bc": "XDEBUG_MODE=off tools/.bc/vendor/bin/roave-backward-compatibility-check",
-        "test-emulator": "FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 vendor/bin/phpunit --group=emulator --testdox",
+        "test-emulator": "FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 tools/phpunit --group=emulator --testdox",
         "test-units": [
-            "vendor/bin/phpunit --exclude-group=emulator --testdox"
+            "tools/phpunit --exclude-group=emulator --testdox"
         ],
         "tools:bc:install": "XDEBUG_MODE=off composer --working-dir=tools/.bc install --no-interaction --no-progress --ansi",
-        "tools:bc:update": "XDEBUG_MODE=off composer --working-dir=tools/.bc update --no-interaction --no-progress --ansi"
+        "tools:bc:update": "XDEBUG_MODE=off composer --working-dir=tools/.bc update --no-interaction --no-progress --ansi",
+        "dependencies:install": "composer install --no-interaction --no-progress --ansi",
+        "lint": [
+            "@rector",
+            "XDEBUG_MODE=off tools/php-cs-fixer fix --dry-run --diff --verbose"
+        ],
+        "lint:fix": "@rector-fix",
+        "setup": [
+            "@dependencies:install",
+            "@tools:install"
+        ],
+        "tools:install": [
+            "@tools:phars:install",
+            "@tools:phpstan:install",
+            "@tools:rector:install",
+            "@tools:link"
+        ],
+        "tools:link": [
+            "ln -snf phpunit tools/phpunit.phar",
+            "ln -snf .phpstan/vendor/bin/phpstan tools/phpstan",
+            "ln -snf .rector/vendor/bin/rector tools/rector"
+        ],
+        "tools:phars:install": "tools/phive --no-progress install --trust-gpg-keys E82B2FB314E9906E,4AA394086372C20A",
+        "tools:phpstan:install": "XDEBUG_MODE=off composer --working-dir=tools/.phpstan install --no-interaction --no-progress --ansi",
+        "tools:phpstan:update": "XDEBUG_MODE=off composer --working-dir=tools/.phpstan update --no-interaction --no-progress --ansi",
+        "tools:rector:install": "XDEBUG_MODE=off composer --working-dir=tools/.rector install --no-interaction --no-progress --ansi",
+        "tools:rector:update": "XDEBUG_MODE=off composer --working-dir=tools/.rector update --no-interaction --no-progress --ansi",
+        "tools:update": [
+            "tools/phive --no-progress selfupdate",
+            "tools/phive --no-progress update",
+            "@tools:phpstan:update",
+            "@tools:rector:update",
+            "@tools:link"
+        ]
     }
 }

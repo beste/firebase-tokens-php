@@ -242,6 +242,23 @@ $verifier = IdTokenVerifier::createWithProjectIdAndCache($projectId, $cache);
 
 ## Development
 
+Install development dependencies and tools with PHP 8.3 or newer and GnuPG available:
+
+```shell
+composer setup
+composer test
+composer lint
+```
+
+The PHPUnit and PHP-CS-Fixer PHARs and tool symlinks are committed. PHIVE manages
+signed PHAR installations and updates. PHPStan and Rector have separate Composer projects
+and lockfiles in `tools/`, which CI installs. Setup installs the recorded versions without
+updating them. Existing commands such as `composer cs`,
+`composer rector-fix`, `composer test-units`, and `composer test-emulator` remain available.
+
+Update the tools explicitly with `composer tools:update`. Commit the updated PHARs,
+`tools/phive`, the PHIVE manifest, and the PHPStan and Rector lockfiles.
+
 Install and run backward compatibility checks with PHP 8.5:
 
 ```shell

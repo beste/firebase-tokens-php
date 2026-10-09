@@ -7,6 +7,7 @@ on:
       - 'tests/**'
       - '.github/workflows/tests.yml'
       - 'composer.json'
+      - '.phive/phars.xml'
       - 'phpstan.neon.dist'
       - 'phpunit.xml.dist'
       - '.php-cs-fixer.dist.php'
@@ -19,6 +20,7 @@ on:
       - 'tests/**'
       - '.github/workflows/tests.yml'
       - 'composer.json'
+      - '.phive/phars.xml'
       - 'phpstan.neon.dist'
       - 'phpunit.xml.dist'
       - '.php-cs-fixer.dist.php'
@@ -76,6 +78,9 @@ jobs:
           composer-options: "${{ matrix.composer-options }}"
           dependency-versions: "${{ matrix.dependencies }}"
 
+      - name: Install PHPStan dependencies
+        run: composer --working-dir=tools/.phpstan install --no-interaction --no-progress --ansi
+
       - name: Setup Problem Matchers
         run: |
           echo "::add-matcher::${MATCHER_PATH}/php.json"
@@ -84,15 +89,15 @@ jobs:
           MATCHER_PATH: ${{ runner.tool_cache }}
 
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyse --no-progress --error-format=github
+        run: tools/phpstan analyse --no-progress --error-format=github
 
       - name: Run unit tests
-        run: vendor/bin/phpunit --exclude-group=emulator --testdox
+        run: tools/phpunit --exclude-group=emulator --testdox
 
       - name: Run emulator-mode tests
         env:
           FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
-        run: vendor/bin/phpunit --group=emulator --testdox
+        run: tools/phpunit --group=emulator --testdox
 
   lint:
     name: Lint
@@ -117,11 +122,14 @@ jobs:
         with:
           dependency-versions: highest
 
+      - name: Install Rector dependencies
+        run: composer --working-dir=tools/.rector install --no-interaction --no-progress --ansi
+
       - name: Run Rector
-        run: vendor/bin/rector --dry-run
+        run: tools/rector --dry-run
 
       - name: Run PHP-CS-Fixer
-        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+        run: tools/php-cs-fixer fix --dry-run --diff
 
   bc-check:
     name: Backward Compatibility Check
@@ -143,7 +151,7 @@ jobs:
           coverage: none
 
       - name: Install Roave BC Check
-        run: composer tools:bc:install
+        run: composer --working-dir=tools/.bc install --no-interaction --no-progress --ansi
 
       - name: Run Roave BC Check
         run: tools/.bc/vendor/bin/roave-backward-compatibility-check --format=github-actions

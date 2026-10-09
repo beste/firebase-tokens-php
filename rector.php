@@ -11,6 +11,7 @@ return RectorConfig::configure()
         __DIR__.'/src',
         __DIR__.'/tests',
     ])
+    ->withBootstrapFiles([__DIR__.'/tools/.rector/vendor/autoload.php'])
     ->withPhpSets()
     ->withPreparedSets(
         deadCode: true,

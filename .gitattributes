@@ -4,6 +4,7 @@
 /.git-blame-ignore-revs export-ignore
 /.gitattributes export-ignore
 /.github export-ignore
+/.phive export-ignore
 /.gitignore export-ignore
 /.php-cs-fixer.dist.php export-ignore
 /phpstan.neon.dist export-ignore
@@ -11,3 +12,6 @@
 /rector.php export-ignore
 /tests export-ignore
 /tools export-ignore
+/tools/phive binary
+/tools/php-cs-fixer binary
+/tools/phpunit binary
