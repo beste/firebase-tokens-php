@@ -17,7 +17,6 @@ final class VerifySessionCookieTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        // @phpstan-ignore-next-line
         VerifySessionCookie::withSessionCookie('cookie')->withLeewayInSeconds(-1);
     }
 }

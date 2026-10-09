@@ -18,24 +18,20 @@ use PHPUnit\Framework\TestCase;
  */
 final class CustomTokenGeneratorTest extends TestCase
 {
-    private Handler $handler;
+    private ?CreateCustomToken $action = null;
 
     private CustomTokenGenerator $generator;
 
     protected function setUp(): void
     {
-        $this->handler = new class implements Handler {
-            public ?CreateCustomToken $action = null;
+        $handler = $this->createStub(Handler::class);
+        $handler->method('handle')->willReturnCallback(function (CreateCustomToken $action): Token {
+            $this->action = $action;
 
-            public function handle(CreateCustomToken $action): Token
-            {
-                $this->action = $action;
+            return SecureToken::withValues('', [], []);
+        });
 
-                return SecureToken::withValues('', [], []);
-            }
-        };
-
-        $this->generator = new CustomTokenGenerator($this->handler);
+        $this->generator = new CustomTokenGenerator($handler);
     }
 
     #[DoesNotPerformAssertions]
@@ -47,30 +43,34 @@ final class CustomTokenGeneratorTest extends TestCase
     public function testItDelegatesASimpleAction(): void
     {
         $this->generator->createCustomToken('uid');
-        $this->assertSame('uid', $this->handler->action->uid());
-        $this->assertEmpty($this->handler->action->customClaims());
-        $this->assertTrue(Duration::fromDateIntervalSpec(CreateCustomToken::DEFAULT_TTL)->equals($this->handler->action->timeToLive()));
+        $this->assertInstanceOf(CreateCustomToken::class, $this->action);
+        $this->assertSame('uid', $this->action->uid());
+        $this->assertEmpty($this->action->customClaims());
+        $this->assertTrue(Duration::fromDateIntervalSpec(CreateCustomToken::DEFAULT_TTL)->equals($this->action->timeToLive()));
     }
 
     public function testItDelegatesAnActionWithCustomClaims(): void
     {
         $customClaims = ['first' => 'first', 'true' => true, 'false' => false, 'null' => null];
         $this->generator->createCustomToken('uid', $customClaims);
+        $this->assertInstanceOf(CreateCustomToken::class, $this->action);
 
-        $this->assertEquals($customClaims, $this->handler->action->customClaims());
+        $this->assertEquals($customClaims, $this->action->customClaims());
     }
 
     public function testItDelegatesAnActionWithACustomTokenExpiration(): void
     {
         $this->generator->createCustomToken('uid', [], 1337);
+        $this->assertInstanceOf(CreateCustomToken::class, $this->action);
 
-        $this->assertTrue(Duration::inSeconds(1337)->equals($this->handler->action->timeToLive()));
+        $this->assertTrue(Duration::inSeconds(1337)->equals($this->action->timeToLive()));
     }
 
     public function testItUsesATenantIdWhenGiven(): void
     {
         $this->generator->withTenantId('my-tenant')->createCustomToken('uid');
+        $this->assertInstanceOf(CreateCustomToken::class, $this->action);
 
-        $this->assertSame('my-tenant', $this->handler->action->tenantId());
+        $this->assertSame('my-tenant', $this->action->tenantId());
     }
 }

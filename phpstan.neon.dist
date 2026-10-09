@@ -1,5 +1,5 @@
 parameters:
-	level: 9
+	level: 10
 	paths:
 		- src/
 		- tests/
@@ -7,16 +7,6 @@ parameters:
 	    - tests/_fixtures
 
 	checkUninitializedProperties: true
-
-	ignoreErrors:
-	    -
-	        message: '#Access to an undefined property .+::\$action#'
-	        paths:
-	            - tests/JWT/CustomTokenGeneratorTest.php
-	            - tests/JWT/IdTokenVerifierTest.php
-	            - tests/JWT/SessionCookieVerifierTest.php
-
-	reportUnmatchedIgnoredErrors: false
 
 includes:
 	- vendor/phpstan/phpstan/conf/bleedingEdge.neon

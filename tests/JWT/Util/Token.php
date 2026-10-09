@@ -217,11 +217,9 @@ final class Token
         }
 
         if ($this->privateKey) {
-            // @phpstan-ignore-next-line
             return $builder->getToken(new Sha256(), InMemory::plainText($this->privateKey))->toString();
         }
 
-        // @phpstan-ignore-next-line
         return $builder->getToken(new None(), new EmptyKey())->toString();
     }
 }

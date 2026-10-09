@@ -18,24 +18,20 @@ use Psr\Cache\CacheItemPoolInterface;
  */
 final class SessionCookieVerifierTest extends TestCase
 {
-    private Handler $handler;
+    private ?VerifySessionCookie $action = null;
 
     private SessionCookieVerifier $verifier;
 
     protected function setUp(): void
     {
-        $this->handler = new class implements Handler {
-            public ?VerifySessionCookie $action = null;
+        $handler = $this->createStub(Handler::class);
+        $handler->method('handle')->willReturnCallback(function (VerifySessionCookie $action): Token {
+            $this->action = $action;
 
-            public function handle(VerifySessionCookie $action): Token
-            {
-                $this->action = $action;
+            return SecureToken::withValues('', [], []);
+        });
 
-                return SecureToken::withValues('', [], []);
-            }
-        };
-
-        $this->verifier = new SessionCookieVerifier($this->handler);
+        $this->verifier = new SessionCookieVerifier($handler);
     }
 
     #[DoesNotPerformAssertions]
@@ -53,20 +49,23 @@ final class SessionCookieVerifierTest extends TestCase
     public function testItVerifiesAToken(): void
     {
         $this->verifier->verifySessionCookie('cookie');
-        $this->assertSame('cookie', $this->handler->action->sessionCookie());
-        $this->assertSame(0, $this->handler->action->leewayInSeconds());
+        $this->assertInstanceOf(VerifySessionCookie::class, $this->action);
+        $this->assertSame('cookie', $this->action->sessionCookie());
+        $this->assertSame(0, $this->action->leewayInSeconds());
     }
 
     public function testItVerifiesATokenWithLeeway(): void
     {
         $this->verifier->verifySessionCookieWithLeeway('cookie', 1337);
-        $this->assertSame('cookie', $this->handler->action->sessionCookie());
-        $this->assertSame(1337, $this->handler->action->leewayInSeconds());
+        $this->assertInstanceOf(VerifySessionCookie::class, $this->action);
+        $this->assertSame('cookie', $this->action->sessionCookie());
+        $this->assertSame(1337, $this->action->leewayInSeconds());
     }
 
     public function testItVerifiesATokenWithAnExpectedTenantId(): void
     {
         $this->verifier->withExpectedTenantId('my-tenant')->verifySessionCookie('cookie');
-        $this->assertSame('my-tenant', $this->handler->action->expectedTenantId());
+        $this->assertInstanceOf(VerifySessionCookie::class, $this->action);
+        $this->assertSame('my-tenant', $this->action->expectedTenantId());
     }
 }

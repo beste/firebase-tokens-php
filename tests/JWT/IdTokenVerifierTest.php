@@ -18,24 +18,20 @@ use Psr\Cache\CacheItemPoolInterface;
  */
 final class IdTokenVerifierTest extends TestCase
 {
-    private Handler $handler;
+    private ?VerifyIdToken $action = null;
 
     private IdTokenVerifier $verifier;
 
     protected function setUp(): void
     {
-        $this->handler = new class implements Handler {
-            public ?VerifyIdToken $action = null;
+        $handler = $this->createStub(Handler::class);
+        $handler->method('handle')->willReturnCallback(function (VerifyIdToken $action): Token {
+            $this->action = $action;
 
-            public function handle(VerifyIdToken $action): Token
-            {
-                $this->action = $action;
+            return SecureToken::withValues('', [], []);
+        });
 
-                return SecureToken::withValues('', [], []);
-            }
-        };
-
-        $this->verifier = new IdTokenVerifier($this->handler);
+        $this->verifier = new IdTokenVerifier($handler);
     }
 
     #[DoesNotPerformAssertions]
@@ -53,20 +49,23 @@ final class IdTokenVerifierTest extends TestCase
     public function testItVerifiesAToken(): void
     {
         $this->verifier->verifyIdToken('token');
-        $this->assertSame('token', $this->handler->action->token());
-        $this->assertSame(0, $this->handler->action->leewayInSeconds());
+        $this->assertInstanceOf(VerifyIdToken::class, $this->action);
+        $this->assertSame('token', $this->action->token());
+        $this->assertSame(0, $this->action->leewayInSeconds());
     }
 
     public function testItVerifiesATokenWithLeeway(): void
     {
         $this->verifier->verifyIdTokenWithLeeway('token', 1337);
-        $this->assertSame('token', $this->handler->action->token());
-        $this->assertSame(1337, $this->handler->action->leewayInSeconds());
+        $this->assertInstanceOf(VerifyIdToken::class, $this->action);
+        $this->assertSame('token', $this->action->token());
+        $this->assertSame(1337, $this->action->leewayInSeconds());
     }
 
     public function testItVerifiesATokenWithAnExpectedTenantId(): void
     {
         $this->verifier->withExpectedTenantId('my-tenant')->verifyIdToken('token');
-        $this->assertSame('my-tenant', $this->handler->action->expectedTenantId());
+        $this->assertInstanceOf(VerifyIdToken::class, $this->action);
+        $this->assertSame('my-tenant', $this->action->expectedTenantId());
     }
 }
