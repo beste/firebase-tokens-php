@@ -31,14 +31,14 @@
         "psr/cache-implementation": "to cache fetched remote public keys"
     },
     "require-dev": {
-        "beste/in-memory-cache": "^1.5",
-        "friendsofphp/php-cs-fixer": "^3.95.12",
+        "beste/in-memory-cache": "^1.6",
+        "friendsofphp/php-cs-fixer": "^3.95.27",
         "phpstan/extension-installer": "^1.4.3",
-        "phpstan/phpstan": "^2.2.5",
-        "phpstan/phpstan-phpunit": "^2.0.18",
-        "phpunit/phpunit": "^10.5.64",
-        "rector/rector": "^2.5.4",
-        "symfony/var-dumper": "^6.4.3 || ^7.3.4 || ^8.1.1"
+        "phpstan/phpstan": "^2.3.1",
+        "phpstan/phpstan-phpunit": "^2.1.1",
+        "phpunit/phpunit": "^10.5.66",
+        "rector/rector": "^2.7.0",
+        "symfony/var-dumper": "^6.4.3 || ^7.3.4 || ^8.1.7"
     },
     "autoload": {
         "psr-4": {
