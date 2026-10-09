@@ -126,7 +126,7 @@ jobs:
         run: composer --working-dir=tools/.rector install --no-interaction --no-progress --ansi
 
       - name: Run Rector
-        run: tools/rector --dry-run
+        run: tools/rector --dry-run --ansi --no-progress-bar
 
       - name: Run PHP-CS-Fixer
         run: tools/php-cs-fixer fix --dry-run --diff
