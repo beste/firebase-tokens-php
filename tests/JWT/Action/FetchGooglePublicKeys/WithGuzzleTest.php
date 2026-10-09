@@ -51,6 +51,15 @@ final class WithGuzzleTest extends TestCase
         $this->assertTrue($keys->isExpiredAt($this->clock->now()->modify('+2 seconds')));
     }
 
+    public function testItDiscardsInvalidKeyIdsAndValues(): void
+    {
+        $this->mockHandler->append(new Response(200, [], '{"key-id":" key ","":"empty-id","7":"numeric-id","empty-key":" ","non-string-key":false,"zero":"0"}'));
+
+        $keys = $this->createHandler()->handle($this->action);
+
+        $this->assertSame(['key-id' => 'key', 'zero' => '0'], $keys->all());
+    }
+
     public function testItHandlesNonSuccessResponses(): void
     {
         $this->mockHandler->append(new Response(500));

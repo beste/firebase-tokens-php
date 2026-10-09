@@ -80,18 +80,28 @@ final readonly class WithGuzzle implements Handler
             : 0;
 
         try {
-            $keys = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+            $values = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
             throw FetchingGooglePublicKeysFailed::because('Unexpected response: '.$e->getMessage());
         }
 
-        if (!is_array($keys)) {
-            $keys = [];
+        if (!is_array($values)) {
+            $values = [];
         }
 
-        $keys = array_filter($keys, is_string(...));
-        $keys = array_map(trim(...), $keys);
-        $keys = array_filter($keys, fn(string $key): bool => $key !== '');
+        $keys = [];
+
+        foreach ($values as $keyId => $key) {
+            if (!is_string($keyId) || $keyId === '' || !is_string($key)) {
+                continue;
+            }
+
+            $key = trim($key);
+
+            if ($key !== '') {
+                $keys[$keyId] = $key;
+            }
+        }
 
         return [
             'keys' => $keys,
