@@ -7,8 +7,3 @@
 /composer.lock
 /phpstan.neon
 /phpunit.xml
-
-/tests/credentials.json
-
-firebase-debug.log
-ui-debug.log
