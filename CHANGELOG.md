@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## 5.6.2 - 2026-10-10
+
 * Fixed whitespace-only `FIREBASE_AUTH_EMULATOR_HOST` values incorrectly enabling emulator mode and skipping signature
   verification for ID tokens and session cookies
 
