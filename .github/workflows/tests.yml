@@ -51,13 +51,10 @@ jobs:
           - "8.3"
           - "8.4"
           - "8.5"
+          - "8.6"
         dependencies:
           - "lowest"
           - "highest"
-        include:
-          - php: "8.6"
-            dependencies: "highest"
-            composer-options: "--ignore-platform-req=php+"
 
     steps:
       - name: Checkout code
@@ -72,11 +69,26 @@ jobs:
           tools: composer, pecl
           coverage: none
 
-      - name: Install dependencies
-        uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer cache directory
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          composer-options: "${{ matrix.composer-options }}"
-          dependency-versions: "${{ matrix.dependencies }}"
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json', 'composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        env:
+          DEPENDENCIES: ${{ matrix.dependencies }}
+        run: |
+          if [ "$DEPENDENCIES" = "lowest" ]; then
+            composer update --prefer-lowest --prefer-stable --no-interaction --no-progress --ansi
+          else
+            composer update --no-interaction --no-progress --ansi
+          fi
 
       - name: Install PHPStan dependencies
         run: composer --working-dir=tools/.phpstan install --no-interaction --no-progress --ansi
@@ -117,10 +129,19 @@ jobs:
           tools: composer
           coverage: none
 
-      - name: Install dependencies
-        uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer cache directory
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          dependency-versions: highest
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json', 'composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer update --no-interaction --no-progress --ansi
 
       - name: Install Rector dependencies
         run: composer --working-dir=tools/.rector install --no-interaction --no-progress --ansi
