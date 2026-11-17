@@ -32,7 +32,7 @@
     },
     "require-dev": {
         "beste/in-memory-cache": "^1.6",
-        "symfony/var-dumper": "^6.4.3 || ^7.3.4 || ^8.1.7"
+        "symfony/var-dumper": "^6.4.3 || ^7.3.4 || ^8.1.10"
     },
     "autoload": {
         "psr-4": {
